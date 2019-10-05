@@ -1,0 +1,6 @@
+C:\Users\user\source\repos\WabbajackModlistPreperator\WabbajackModlistPreperator\bin\Debug\WabbajackModlistPreperator.exe.config
+C:\Users\user\source\repos\WabbajackModlistPreperator\WabbajackModlistPreperator\bin\Debug\WabbajackModlistPreperator.exe
+C:\Users\user\source\repos\WabbajackModlistPreperator\WabbajackModlistPreperator\bin\Debug\WabbajackModlistPreperator.pdb
+C:\Users\user\source\repos\WabbajackModlistPreperator\WabbajackModlistPreperator\obj\Debug\WabbajackModlistPreperator.csprojAssemblyReference.cache
+C:\Users\user\source\repos\WabbajackModlistPreperator\WabbajackModlistPreperator\obj\Debug\WabbajackModlistPreperator.exe
+C:\Users\user\source\repos\WabbajackModlistPreperator\WabbajackModlistPreperator\obj\Debug\WabbajackModlistPreperator.pdb
