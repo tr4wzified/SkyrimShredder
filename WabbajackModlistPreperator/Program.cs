@@ -65,6 +65,7 @@ namespace WabbajackModlistPreparator
             string AppDataLocal = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             Console.WriteLine("AppData Local Directory: " + AppDataLocal);
             string ProgramFiles86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+            Console.WriteLine("Program Files (x86) Directory: " + ProgramFiles86);
             string SteamFolder = Path.Combine(ProgramFiles86, "Steam");
             List<string> SteamLibraries = new List<string>();
             // This library always exists when installing Steam, and is not in libraryfolders.vdf, so adding it manually
@@ -88,8 +89,6 @@ namespace WabbajackModlistPreparator
             {
                 Console.WriteLine(SteamLibrary);
             }
-
-            Console.WriteLine("Program Files (x86) Directory: " + AppData);
             Console.WriteLine("-----------------------------------------------------------");
 
             // Step 1 
