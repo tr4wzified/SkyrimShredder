@@ -14,7 +14,7 @@ namespace WabbajackModlistPreparator
 {
     class Program
     {
-        private static string Version = "1.1";
+        private static string Version = "1.1.1";
 
         //
         // Moving files to recycle bin instead of deleting to prevent catastrophy.
