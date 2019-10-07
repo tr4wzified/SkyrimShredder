@@ -5,14 +5,17 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualBasic;
 
-namespace WabbajackLexyModlistPreperator
+namespace WabbajackModlistPreparator
 {
     class Program
     {
+        private static string Version = "1.1";
+
         //
         // Moving files to recycle bin instead of deleting to prevent catastrophy.
         //
@@ -48,14 +51,13 @@ namespace WabbajackLexyModlistPreperator
             SHFileOperation(ref fileop);
         }
 
-        static string Version = "1.0";
 
-        // Application
-        // Created on LexyLOTD v0.4.6
+        // Main application
+        // Based on LexyLOTD Wabbajack v0.4.6 steps
         static void Main(string[] args)
         {
             Console.WriteLine("-----------------------------------------------------------");
-            Console.WriteLine("Running trawzifieds Lexy LOTD Wabbajack Preperator");
+            Console.WriteLine("Running trawzifieds Wabbajack Preparator");
             Console.WriteLine("Version " + Version);
             Console.WriteLine("-----------------------------------------------------------");
             string AppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
@@ -63,6 +65,30 @@ namespace WabbajackLexyModlistPreperator
             string AppDataLocal = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             Console.WriteLine("AppData Local Directory: " + AppDataLocal);
             string ProgramFiles86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+            string SteamFolder = Path.Combine(ProgramFiles86, "Steam");
+            List<string> SteamLibraries = new List<string>();
+            // This library always exists when installing Steam, and is not in libraryfolders.vdf, so adding it manually
+            SteamLibraries.Add(Path.Combine(SteamFolder, "steamapps", "common"));
+
+            // Search for all Steam Libraries on this computer
+            foreach(string line in File.ReadLines(Path.Combine(SteamFolder, "steamapps", "libraryfolders.vdf")))
+            {
+                string a = line.Trim();
+                if (a.Length > 2)
+                {
+                    if (Char.IsDigit(a[1]))
+                    {
+                        string[] b = a.Split('"');
+                        SteamLibraries.Add(Path.Combine(b[3], "steamapps", "common"));
+                    }
+                }
+            }
+            Console.WriteLine("Detected Steam Libraries: ");
+            foreach(string SteamLibrary in SteamLibraries)
+            {
+                Console.WriteLine(SteamLibrary);
+            }
+
             Console.WriteLine("Program Files (x86) Directory: " + AppData);
             Console.WriteLine("-----------------------------------------------------------");
 
@@ -80,8 +106,17 @@ namespace WabbajackLexyModlistPreperator
             }
 
             // Step 2
-            string SSEModsFolder = Path.Combine(ProgramFiles86, "Steam", "steamapps", "common", "Skyrim Special Edition Mods");
-            if (Directory.Exists(SSEModsFolder))
+            string SSEModsFolder = "";
+            // Search each Steam Library for the SSE Mods folder
+            foreach(string SteamLibrary in SteamLibraries)
+            {
+                if (Directory.Exists(Path.Combine(SteamLibrary, "Skyrim Special Edition Mods")))
+                {
+                    SSEModsFolder = Path.Combine(SteamLibrary, "Skyrim Special Edition Mods");
+                }
+            }
+
+            if (SSEModsFolder != null)
             {
                 Console.WriteLine("Skyrim Special Edition Mods folder found! Do you wish to delete it? (Y/N)");
                 string SSEMods = Console.ReadLine().ToLower();
@@ -89,7 +124,6 @@ namespace WabbajackLexyModlistPreperator
                 {
                     DeleteToRecyclingBin(SSEModsFolder);
                 }
-            Console.WriteLine("-----------------------------------------------------------");
             }
             else
             {
@@ -157,25 +191,6 @@ namespace WabbajackLexyModlistPreperator
             {
                 Console.WriteLine("'AppData/Roaming/zEdit' folder not found.");
             }
-
-            /*
-            // Step 7
-            if (Directory.Exists(Path.Combine(AppData, "Mod Organizer"))) {
-                Console.WriteLine("'AppData/Roaming/Mod Organizer' folder found!");
-                Console.WriteLine("WARNING: This folder might contain essential files from your previous modlist!");
-                Console.WriteLine("I recommend backing it up somewhere else if you wish to keep it.");
-                Console.WriteLine("Do you wish to delete it? (Y/N)");
-                string MO = Console.ReadLine().ToLower();
-                if(MO == "y" || MO == "yes")
-                {
-                    DeleteToRecyclingBin(Path.Combine(AppData, "Mod Organizer"));
-                }
-            }
-            else
-            {
-                Console.WriteLine("'AppData/Roaming/Mod Organizer' folder not found.");
-            }
-            */
 
             // END
             Console.WriteLine("-----------------------------------------------------------");
