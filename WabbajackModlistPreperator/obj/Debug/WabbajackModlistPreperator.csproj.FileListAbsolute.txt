@@ -4,3 +4,8 @@ C:\Users\user\source\repos\WabbajackModlistPreperator\WabbajackModlistPreperator
 C:\Users\user\source\repos\WabbajackModlistPreperator\WabbajackModlistPreperator\obj\Debug\WabbajackModlistPreperator.csprojAssemblyReference.cache
 C:\Users\user\source\repos\WabbajackModlistPreperator\WabbajackModlistPreperator\obj\Debug\WabbajackModlistPreperator.exe
 C:\Users\user\source\repos\WabbajackModlistPreperator\WabbajackModlistPreperator\obj\Debug\WabbajackModlistPreperator.pdb
+C:\Users\user\source\repos\WabbajackModlistPreperator\WabbajackModlistPreperator\bin\Debug\Microsoft.WindowsAPICodePack.dll
+C:\Users\user\source\repos\WabbajackModlistPreperator\WabbajackModlistPreperator\bin\Debug\Microsoft.WindowsAPICodePack.Shell.dll
+C:\Users\user\source\repos\WabbajackModlistPreperator\WabbajackModlistPreperator\bin\Debug\Microsoft.WindowsAPICodePack.xml
+C:\Users\user\source\repos\WabbajackModlistPreperator\WabbajackModlistPreperator\bin\Debug\Microsoft.WindowsAPICodePack.Shell.xml
+C:\Users\user\source\repos\WabbajackModlistPreperator\WabbajackModlistPreperator\obj\Debug\WabbajackModlistPreperator.csproj.CopyComplete

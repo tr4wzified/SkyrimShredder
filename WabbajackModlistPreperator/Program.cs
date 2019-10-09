@@ -1,14 +1,11 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.VisualBasic;
 
 namespace WabbajackModlistPreparator
 {
@@ -64,15 +61,14 @@ namespace WabbajackModlistPreparator
             Console.WriteLine("AppData Directory: " + AppData);
             string AppDataLocal = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             Console.WriteLine("AppData Local Directory: " + AppDataLocal);
-            string ProgramFiles86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
-            Console.WriteLine("Program Files (x86) Directory: " + ProgramFiles86);
-            string SteamFolder = Path.Combine(ProgramFiles86, "Steam");
+            RegistryKey Steam = Registry.CurrentUser.OpenSubKey(@"Software\\Valve\\Steam", false);
+            string SteamFolder = (string)Steam.GetValue("SteamPath");
             List<string> SteamLibraries = new List<string>();
             // This library always exists when installing Steam, and is not in libraryfolders.vdf, so adding it manually
             SteamLibraries.Add(Path.Combine(SteamFolder, "steamapps", "common"));
 
             // Search for all Steam Libraries on this computer
-            foreach(string line in File.ReadLines(Path.Combine(SteamFolder, "steamapps", "libraryfolders.vdf")))
+            foreach (string line in File.ReadLines(Path.Combine(SteamFolder, "steamapps", "libraryfolders.vdf")))
             {
                 string a = line.Trim();
                 if (a.Length > 2)
@@ -107,7 +103,7 @@ namespace WabbajackModlistPreparator
             // Step 2
             string SSEModsFolder = "";
             // Search each Steam Library for the SSE Mods folder
-            foreach(string SteamLibrary in SteamLibraries)
+            foreach (string SteamLibrary in SteamLibraries)
             {
                 if (Directory.Exists(Path.Combine(SteamLibrary, "Skyrim Special Edition Mods")))
                 {
@@ -131,7 +127,7 @@ namespace WabbajackModlistPreparator
 
             // Step 3
             string SSEConfigFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games", "Skyrim Special Edition");
-            if(Directory.Exists(SSEConfigFolder)) {
+            if (Directory.Exists(SSEConfigFolder)) {
                 Console.WriteLine("Skyrim Special Edition Documents folder found! WARNING: This folder might contain previous saves or configuration.");
                 Console.WriteLine("You might want to back those up before removing this folder!");
                 Console.WriteLine("Location: " + SSEConfigFolder);
