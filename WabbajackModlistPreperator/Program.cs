@@ -11,12 +11,12 @@ namespace WabbajackModlistPreparator
 {
     class Program
     {
-        private static string Version = "1.1.1";
+        private static string Version = "1.3";
 
         //
         // Moving files to recycle bin instead of deleting to prevent catastrophy.
         //
-         
+
         private const int FO_DELETE = 0x0003;
         private const int FOF_ALLOWUNDO = 0x0040;           // Preserve undo information, if possible. 
         private const int FOF_NOCONFIRMATION = 0x0010;      // Show no confirmation dialog box to the user
@@ -53,21 +53,17 @@ namespace WabbajackModlistPreparator
         // Based on LexyLOTD Wabbajack v0.4.6 steps
         static void Main(string[] args)
         {
-            Console.WriteLine("-----------------------------------------------------------");
-            Console.WriteLine("Running trawzifieds Wabbajack Preparator");
-            Console.WriteLine("Version " + Version);
-            Console.WriteLine("-----------------------------------------------------------");
+
+            string SSEFolder = "";
+            string SSEModsFolder = "";
             string AppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            Console.WriteLine("AppData Directory: " + AppData);
             string AppDataLocal = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            Console.WriteLine("AppData Local Directory: " + AppDataLocal);
-            RegistryKey Steam = Registry.CurrentUser.OpenSubKey(@"Software\\Valve\\Steam", false);
-            string SteamFolder = (string)Steam.GetValue("SteamPath");
+            string SteamFolder = (string)Registry.CurrentUser.OpenSubKey(@"Software\\Valve\\Steam", false).GetValue("SteamPath");
+
             List<string> SteamLibraries = new List<string>();
             // This library always exists when installing Steam, and is not in libraryfolders.vdf, so adding it manually
             SteamLibraries.Add(Path.Combine(SteamFolder, "steamapps", "common"));
 
-            // Search for all Steam Libraries on this computer
             foreach (string line in File.ReadLines(Path.Combine(SteamFolder, "steamapps", "libraryfolders.vdf")))
             {
                 string a = line.Trim();
@@ -80,36 +76,53 @@ namespace WabbajackModlistPreparator
                     }
                 }
             }
-            Console.WriteLine("Detected Steam Libraries: ");
-            foreach(string SteamLibrary in SteamLibraries)
-            {
-                Console.WriteLine(SteamLibrary);
-            }
+
             Console.WriteLine("-----------------------------------------------------------");
+            Console.WriteLine("Running trawzifieds Wabbajack Preparator");
+            Console.WriteLine("Version " + Version);
+            Console.WriteLine("-----------------------------------------------------------");
+            Console.WriteLine("AppData Directory: " + AppData);
+            Console.WriteLine("AppData Local Directory: " + AppDataLocal);
 
-            // Step 1 
-            Console.WriteLine("Do you wish to reinstall Skyrim Special Edition? (Y/N)");
-            string ReInstall = Console.ReadLine().ToLower();
-            if (ReInstall == "y" || ReInstall == "yes")
-            {
-                Console.WriteLine("Prompting user to uninstall Skyrim Special Edition.");
-                Process.Start("steam://uninstall/489830");
-                Console.WriteLine("Waiting for uninstallation...");
-                Thread.Sleep(6500);
-                Console.WriteLine("Prompting user to install Skyrim Special Edition.");
-                Process.Start("steam://install/489830");
-            }
-
-            // Step 2
-            string SSEModsFolder = "";
-            // Search each Steam Library for the SSE Mods folder
+            // Search for all Steam Libraries on this computer
+            Console.WriteLine("-----------------------------------------------------------");
+            Console.WriteLine("Detected Steam Libraries: ");
             foreach (string SteamLibrary in SteamLibraries)
             {
+                Console.WriteLine(SteamLibrary);
+                if (Directory.Exists(Path.Combine(SteamLibrary, "Skyrim Special Edition")))
+                {
+                    SSEFolder = Path.Combine(SteamLibrary, "Skyrim Special Edition");
+                }
                 if (Directory.Exists(Path.Combine(SteamLibrary, "Skyrim Special Edition Mods")))
                 {
                     SSEModsFolder = Path.Combine(SteamLibrary, "Skyrim Special Edition Mods");
                 }
             }
+            Console.WriteLine("-----------------------------------------------------------");
+
+            // Step 1 
+            if (SSEFolder != null)
+            {
+                Console.WriteLine("Do you wish to reinstall Skyrim Special Edition? (Y/N)");
+                string ReInstall = Console.ReadLine().ToLower();
+                if (ReInstall == "y" || ReInstall == "yes")
+                {
+                    DeleteToRecyclingBin(SSEFolder);
+                    Console.WriteLine("Prompting user to uninstall Skyrim Special Edition.");
+                    Process.Start("steam://uninstall/489830");
+                    Console.WriteLine("Waiting for uninstallation...");
+                    Thread.Sleep(2500);
+                    Console.WriteLine("Prompting user to install Skyrim Special Edition.");
+                    Process.Start("steam://install/489830");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Skyrim Special Edition not found.");
+            }
+
+            // Step 2
 
             if (SSEModsFolder != null)
             {
@@ -127,13 +140,15 @@ namespace WabbajackModlistPreparator
 
             // Step 3
             string SSEConfigFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games", "Skyrim Special Edition");
-            if (Directory.Exists(SSEConfigFolder)) {
-                Console.WriteLine("Skyrim Special Edition Documents folder found! WARNING: This folder might contain previous saves or configuration.");
+            if (Directory.Exists(SSEConfigFolder))
+            {
+                Console.WriteLine("Skyrim Special Edition Documents folder found!");
+                Console.WriteLine("WARNING: This folder might contain previous saves or configuration.");
                 Console.WriteLine("You might want to back those up before removing this folder!");
                 Console.WriteLine("Location: " + SSEConfigFolder);
                 Console.WriteLine("Do you wish to delete it? (Y/N)");
                 string SSEConfig = Console.ReadLine().ToLower();
-                if(SSEConfig == "y" || SSEConfig == "yes")
+                if (SSEConfig == "y" || SSEConfig == "yes")
                 {
                     DeleteToRecyclingBin(SSEConfigFolder);
                 }
@@ -145,10 +160,11 @@ namespace WabbajackModlistPreparator
             }
 
             // Step 4
-            if (Directory.Exists(Path.Combine(AppDataLocal, "LOOT"))) {
+            if (Directory.Exists(Path.Combine(AppDataLocal, "LOOT")))
+            {
                 Console.WriteLine("'AppData/Local/LOOT' folder found! Do you wish to delete it? (Y/N)");
                 string LOOT = Console.ReadLine().ToLower();
-                if(LOOT == "y" || LOOT == "yes")
+                if (LOOT == "y" || LOOT == "yes")
                 {
                     DeleteToRecyclingBin(Path.Combine(AppDataLocal, "LOOT"));
                 }
@@ -159,10 +175,11 @@ namespace WabbajackModlistPreparator
             }
 
             // Step 5
-            if (Directory.Exists(Path.Combine(AppDataLocal, "Skyrim Special Edition"))) {
+            if (Directory.Exists(Path.Combine(AppDataLocal, "Skyrim Special Edition")))
+            {
                 Console.WriteLine("'AppData/Local/Skyrim Special Edition' folder found! Do you wish to delete it? (Y/N)");
                 string SSELocal = Console.ReadLine().ToLower();
-                if(SSELocal == "y" || SSELocal == "yes")
+                if (SSELocal == "y" || SSELocal == "yes")
                 {
                     DeleteToRecyclingBin(Path.Combine(AppDataLocal, "Skyrim Special Edition"));
                 }
@@ -174,10 +191,11 @@ namespace WabbajackModlistPreparator
 
             // Step 6
 
-            if (Directory.Exists(Path.Combine(AppData, "zEdit"))) {
+            if (Directory.Exists(Path.Combine(AppData, "zEdit")))
+            {
                 Console.WriteLine("'AppData/Roaming/zEdit' folder found! Do you wish to delete it? (Y/N)");
                 string zEdit = Console.ReadLine().ToLower();
-                if(zEdit == "y" || zEdit == "yes")
+                if (zEdit == "y" || zEdit == "yes")
                 {
                     DeleteToRecyclingBin(Path.Combine(AppData, "zEdit"));
                 }
