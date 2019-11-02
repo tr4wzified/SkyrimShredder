@@ -7,7 +7,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 
-namespace WabbajackModlistPreparator
+namespace SkyrimShredder
 {
     class Program
     {
@@ -50,7 +50,6 @@ namespace WabbajackModlistPreparator
 
 
         // Main application
-        // Based on LexyLOTD Wabbajack v0.4.6 steps
         static void Main(string[] args)
         {
 
@@ -78,7 +77,7 @@ namespace WabbajackModlistPreparator
             }
 
             Console.WriteLine("-----------------------------------------------------------");
-            Console.WriteLine("Running trawzifieds Wabbajack Preparator");
+            Console.WriteLine("Running trawzifieds Skyrim Shredder");
             Console.WriteLine("Version " + Version);
             Console.WriteLine("-----------------------------------------------------------");
             Console.WriteLine("AppData Directory: " + AppData);
@@ -207,9 +206,7 @@ namespace WabbajackModlistPreparator
 
             // END
             Console.WriteLine("-----------------------------------------------------------");
-            Console.WriteLine("Preparation for modlist install complete! Press any key to exit.");
-            Console.WriteLine("Now you're off to...");
-            Console.WriteLine("The Wabbajack! Huh? Huh? Didn't see that coming, did you?");
+            Console.WriteLine("Skyrim Shredder complete! Press any key to exit.");
             Console.WriteLine("-----------------------------------------------------------");
             Console.ReadKey();
 
