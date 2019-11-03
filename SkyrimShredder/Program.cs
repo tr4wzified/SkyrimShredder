@@ -11,7 +11,7 @@ namespace SkyrimShredder
 {
     class Program
     {
-        private static string Version = "1.3";
+        private static string Version = "1.4";
 
         //
         // Moving files to recycle bin instead of deleting to prevent catastrophy.
@@ -108,11 +108,19 @@ namespace SkyrimShredder
                 if (ReInstall == "y" || ReInstall == "yes")
                 {
                     DeleteToRecyclingBin(SSEFolder);
-                    Console.WriteLine("Prompting user to uninstall Skyrim Special Edition.");
+                    Console.WriteLine("Prompting Steam uninstallation process for Skyrim Special Edition.");
                     Process.Start("steam://uninstall/489830");
                     Console.WriteLine("Waiting for uninstallation...");
-                    Thread.Sleep(2500);
-                    Console.WriteLine("Prompting user to install Skyrim Special Edition.");
+                    Thread.Sleep(4500);
+                    // Double check if folder is actually removed
+                    foreach (string SteamLibrary in SteamLibraries)
+                    {
+                        if (Directory.Exists(Path.Combine(SteamLibrary, "Skyrim Special Edition")))
+                        {
+                            DeleteToRecyclingBin(Path.Combine(SteamLibrary, "Skyrim Special Edition"));
+                        }
+                    }
+                    Console.WriteLine("Prompting Steam installation process for Skyrim Special Edition.");
                     Process.Start("steam://install/489830");
                 }
             }
@@ -144,7 +152,6 @@ namespace SkyrimShredder
                 Console.WriteLine("Skyrim Special Edition Documents folder found!");
                 Console.WriteLine("WARNING: This folder might contain previous saves or configuration.");
                 Console.WriteLine("You might want to back those up before removing this folder!");
-                Console.WriteLine("Location: " + SSEConfigFolder);
                 Console.WriteLine("Do you wish to delete it? (Y/N)");
                 string SSEConfig = Console.ReadLine().ToLower();
                 if (SSEConfig == "y" || SSEConfig == "yes")
@@ -189,9 +196,6 @@ namespace SkyrimShredder
             }
 
             // Step 6
-            Console.WriteLine(Environment.GetFolderPath(Environment.SpecialFolder.MyComputer).ToString());
-            if(Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.MyComputer))) { }
-
             if (Directory.Exists(Path.Combine(AppData, "zEdit")))
             {
                 Console.WriteLine("'AppData/Roaming/zEdit' folder found! Do you wish to delete it? (Y/N)");
