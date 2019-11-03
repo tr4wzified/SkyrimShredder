@@ -189,6 +189,8 @@ namespace SkyrimShredder
             }
 
             // Step 6
+            Console.WriteLine(Environment.GetFolderPath(Environment.SpecialFolder.MyComputer).ToString());
+            if(Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.MyComputer))) { }
 
             if (Directory.Exists(Path.Combine(AppData, "zEdit")))
             {
