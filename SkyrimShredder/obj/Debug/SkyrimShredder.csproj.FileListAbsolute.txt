@@ -1,0 +1,11 @@
+C:\Users\user\source\repos\WabbajackModlistPreperator\SkyrimShredder\bin\Debug\Microsoft.WindowsAPICodePack.dll
+C:\Users\user\source\repos\WabbajackModlistPreperator\SkyrimShredder\bin\Debug\Microsoft.WindowsAPICodePack.Shell.dll
+C:\Users\user\source\repos\WabbajackModlistPreperator\SkyrimShredder\bin\Debug\Microsoft.WindowsAPICodePack.xml
+C:\Users\user\source\repos\WabbajackModlistPreperator\SkyrimShredder\bin\Debug\Microsoft.WindowsAPICodePack.Shell.xml
+C:\Users\user\source\repos\WabbajackModlistPreperator\SkyrimShredder\obj\Debug\SkyrimShredder.csprojAssemblyReference.cache
+C:\Users\user\source\repos\WabbajackModlistPreperator\SkyrimShredder\obj\Debug\SkyrimShredder.csproj.CopyComplete
+C:\Users\user\source\repos\WabbajackModlistPreperator\SkyrimShredder\bin\Debug\SkyrimShredder.exe.config
+C:\Users\user\source\repos\WabbajackModlistPreperator\SkyrimShredder\bin\Debug\SkyrimShredder.exe
+C:\Users\user\source\repos\WabbajackModlistPreperator\SkyrimShredder\bin\Debug\SkyrimShredder.pdb
+C:\Users\user\source\repos\WabbajackModlistPreperator\SkyrimShredder\obj\Debug\SkyrimShredder.exe
+C:\Users\user\source\repos\WabbajackModlistPreperator\SkyrimShredder\obj\Debug\SkyrimShredder.pdb
