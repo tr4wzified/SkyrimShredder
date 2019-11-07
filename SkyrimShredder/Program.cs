@@ -11,7 +11,7 @@ namespace SkyrimShredder
 {
     class Program
     {
-        private static string Version = "1.4";
+        private static string Version = "1.5";
 
         //
         // Moving files to recycle bin instead of deleting to prevent catastrophy.
@@ -166,13 +166,19 @@ namespace SkyrimShredder
             }
 
             // Step 4
-            if (Directory.Exists(Path.Combine(AppDataLocal, "LOOT")))
+            if (Directory.Exists(Path.Combine(AppDataLocal, "LOOT")) || Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "LOOT")))
             {
-                Console.WriteLine("'AppData/Local/LOOT' folder found! Do you wish to delete it? (Y/N)");
+                Console.WriteLine("LOOT folder found! Do you wish to delete LOOT? (Y/N)");
                 string LOOT = Console.ReadLine().ToLower();
                 if (LOOT == "y" || LOOT == "yes")
                 {
-                    DeleteToRecyclingBin(Path.Combine(AppDataLocal, "LOOT"));
+                    if(Directory.Exists(Path.Combine(AppDataLocal, "LOOT")))
+                    {
+                        DeleteToRecyclingBin(Path.Combine(AppDataLocal, "LOOT"));
+                    }
+                    if (Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "LOOT"))) {
+                        Process.Start(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "LOOT", "unins001.exe"));
+                    }
                 }
             }
             else
