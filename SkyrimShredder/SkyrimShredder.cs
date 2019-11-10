@@ -11,7 +11,7 @@ namespace SkyrimShredder
 {
     class Program
     {
-        private static string Version = "1.5";
+        private static string Version = "1.6";
 
         //
         // Moving files to recycle bin instead of deleting to prevent catastrophy.
@@ -57,6 +57,10 @@ namespace SkyrimShredder
             string SSEModsFolder = "";
             string AppData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             string AppDataLocal = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string ProgramFiles = Environment.ExpandEnvironmentVariables("%ProgramW6432%");
+            string ProgramFilesX86 = Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%");
+            string Documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
             string SteamFolder = (string)Registry.CurrentUser.OpenSubKey(@"Software\\Valve\\Steam", false).GetValue("SteamPath");
 
             List<string> SteamLibraries = new List<string>();
@@ -80,11 +84,8 @@ namespace SkyrimShredder
             Console.WriteLine("Running trawzifieds Skyrim Shredder");
             Console.WriteLine("Version " + Version);
             Console.WriteLine("-----------------------------------------------------------");
-            Console.WriteLine("AppData Directory: " + AppData);
-            Console.WriteLine("AppData Local Directory: " + AppDataLocal);
 
             // Search for all Steam Libraries on this computer
-            Console.WriteLine("-----------------------------------------------------------");
             Console.WriteLine("Detected Steam Libraries: ");
             foreach (string SteamLibrary in SteamLibraries)
             {
@@ -100,19 +101,20 @@ namespace SkyrimShredder
             }
             Console.WriteLine("-----------------------------------------------------------");
 
-            // Step 1 
+            // Skyrim SE Game Directory
             if (SSEFolder != null)
             {
                 Console.WriteLine("Do you wish to reinstall Skyrim Special Edition? (Y/N)");
                 string ReInstall = Console.ReadLine().ToLower();
                 if (ReInstall == "y" || ReInstall == "yes")
                 {
-                    DeleteToRecyclingBin(SSEFolder);
                     Console.WriteLine("Prompting Steam uninstallation process for Skyrim Special Edition.");
-                    Process.Start("steam://uninstall/489830");
+                    Process SteamUninstallation = Process.Start("steam://uninstall/489830");
                     Console.WriteLine("Waiting for uninstallation...");
-                    Thread.Sleep(4500);
-                    // Double check if folder is actually removed
+                    // Steam doesn't work with Process.WaitForExit(), kinda weird hack but guess we'll wait for 5 seconds then.
+                    Thread.Sleep(5000);
+
+                    // Remove all Skyrim SE installations, 
                     foreach (string SteamLibrary in SteamLibraries)
                     {
                         if (Directory.Exists(Path.Combine(SteamLibrary, "Skyrim Special Edition")))
@@ -129,7 +131,7 @@ namespace SkyrimShredder
                 Console.WriteLine("Skyrim Special Edition not found.");
             }
 
-            // Step 2
+            // Skyrim SE Mods next to game directory
 
             if (SSEModsFolder != null)
             {
@@ -145,8 +147,8 @@ namespace SkyrimShredder
                 Console.WriteLine("Skyrim Special Edition Mods folder not found.");
             }
 
-            // Step 3
-            string SSEConfigFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games", "Skyrim Special Edition");
+            // Skyrim SE My Documents
+            string SSEConfigFolder = Path.Combine(Documents, "My Games", "Skyrim Special Edition");
             if (Directory.Exists(SSEConfigFolder))
             {
                 Console.WriteLine("Skyrim Special Edition Documents folder found!");
@@ -165,10 +167,10 @@ namespace SkyrimShredder
                 Console.WriteLine("Skyrim Special Edition Documents folder not found.");
             }
 
-            // Step 4
-            if (Directory.Exists(Path.Combine(AppDataLocal, "LOOT")) || Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "LOOT")))
+            // LOOT
+            if (Directory.Exists(Path.Combine(AppDataLocal, "LOOT")) || Directory.Exists(Path.Combine(ProgramFilesX86, "LOOT")))
             {
-                Console.WriteLine("LOOT folder found! Do you wish to delete LOOT? (Y/N)");
+                Console.WriteLine("LOOT found! Do you wish to delete LOOT? (Y/N)");
                 string LOOT = Console.ReadLine().ToLower();
                 if (LOOT == "y" || LOOT == "yes")
                 {
@@ -176,8 +178,19 @@ namespace SkyrimShredder
                     {
                         DeleteToRecyclingBin(Path.Combine(AppDataLocal, "LOOT"));
                     }
-                    if (Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "LOOT"))) {
-                        Process.Start(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "LOOT", "unins001.exe"));
+
+                    if (Directory.Exists(Path.Combine(ProgramFilesX86, "LOOT"))) {
+                        try
+                        {
+                            Process LOOTUninstaller = Process.Start(Path.Combine(ProgramFilesX86, "LOOT", "unins001.exe"));
+                            LOOTUninstaller.WaitForExit();
+                        }
+                        catch
+                        {
+                            Console.WriteLine("LOOT uninstaller not found! Exiting in 5 seconds.");
+                            Thread.Sleep(5000);
+                            Environment.Exit(0);
+                        }
                     }
                 }
             }
@@ -186,7 +199,57 @@ namespace SkyrimShredder
                 Console.WriteLine("LOOT folder not found.");
             }
 
-            // Step 5
+            // Nexus Mod Manager
+            if (Directory.Exists(Path.Combine(ProgramFiles, "Nexus Mod Manager")))
+            {
+                Console.WriteLine("Nexus Mod Manager found! Do you wish to delete NMM? (Y/N)");
+                string NexusModManager = Console.ReadLine().ToLower();
+                if (NexusModManager == "y" || NexusModManager == "yes")
+                {
+                    var LocalMachine = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
+                    string NMMInstallInfo = (string)LocalMachine.OpenSubKey(@"SOFTWARE\\NexusModManager\\SkyrimSE", false).GetValue("InstallInfo");
+                    string NMMMods = (string)LocalMachine.OpenSubKey(@"SOFTWARE\\NexusModManager\\SkyrimSE", false).GetValue("Mods");
+                    string NMMVirtual = (string)LocalMachine.OpenSubKey(@"SOFTWARE\\NexusModManager\\SkyrimSE", false).GetValue("Virtual");
+                    try
+                    {
+                        Process NMMUninstaller = Process.Start(Path.Combine(ProgramFiles, "Nexus Mod Manager", "uninstall", "unins000.exe"));
+                        NMMUninstaller.WaitForExit();
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Could not find Nexus Mod Manager uninstaller! Exiting in 5 seconds.");
+                        Thread.Sleep(5000);
+                        Environment.Exit(0);
+                    }
+
+                    // This one is not removed by the uninstaller for some reason
+                    if (Directory.Exists(Path.Combine(ProgramFiles, "Nexus Mod Manager")))
+                    {
+                        DeleteToRecyclingBin(Path.Combine(ProgramFiles, "Nexus Mod Manager"));
+                    }
+                    // These should be gone already but checking just in case
+                    if (Directory.Exists(NMMInstallInfo))
+                    {
+                        DeleteToRecyclingBin(NMMInstallInfo);
+                    }
+
+                    if (Directory.Exists(NMMMods))
+                    {
+                        DeleteToRecyclingBin(NMMMods);
+                    }
+
+                    if (Directory.Exists(NMMVirtual))
+                    {
+                        DeleteToRecyclingBin(NMMVirtual);
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Nexus Mod Manager not found.");
+            }
+
+            // Skyrim SE AppDataLocal
             if (Directory.Exists(Path.Combine(AppDataLocal, "Skyrim Special Edition")))
             {
                 Console.WriteLine("'AppData/Local/Skyrim Special Edition' folder found! Do you wish to delete it? (Y/N)");
@@ -201,7 +264,7 @@ namespace SkyrimShredder
                 Console.WriteLine("'AppData/Local/Skyrim Special Edition' folder not found.");
             }
 
-            // Step 6
+            // zEdit AppData
             if (Directory.Exists(Path.Combine(AppData, "zEdit")))
             {
                 Console.WriteLine("'AppData/Roaming/zEdit' folder found! Do you wish to delete it? (Y/N)");
